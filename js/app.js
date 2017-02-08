@@ -29,6 +29,12 @@ Enemy.prototype.update = function(dt) {
     this.x += dt * this.s;
     }
     this.y = this.row*rowHeight+rowBase;
+    //deciding if there's a collision
+    if (player.row == this.row && player.x+hitMargin < this.x+colWidth && player.x+colWidth-hitMargin > this.x) {
+      // collision
+       window.alert("you're hit!");
+       player.reset();
+    }
 
 };
 
@@ -41,17 +47,13 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 // Enemies our player must avoid
-var Player = function(col, row) {
+var Player = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/char-boy.png';
-    this.row = row;
-    this.col = col;
-  //  this.x = col*colWidth;
-  //  this.y = rowBase+row*rowHeight;
 };
 
 // Update the player's position, required method for game
@@ -84,8 +86,11 @@ Player.prototype.handleInput = function(keyCode) {
         }
         break;
       case 'up':
-        if (this.row === 0) {
+        if (this.row === 1) {
           this.row = maxRow;
+          // alert finish
+          window.alert("YOU WON!");
+          this.reset();
         }
         else {
           this.row -= 1;
@@ -100,12 +105,18 @@ Player.prototype.handleInput = function(keyCode) {
     }
 }
 
+Player.prototype.reset = function() {
+  this.row = maxRow;
+  this.col = maxCol/2;
+}
+
 // define constants
 var rowHeight = 83;
 var rowBase = -20;
 var colWidth = 101;
 var maxRow = 5;
 var maxCol = 4;
+var hitMargin = 25;
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -115,7 +126,8 @@ var enemy3 = new Enemy(-colWidth,3,50);
 
 var allEnemies = [enemy1, enemy2, enemy3];
 // Place the player object in a variable called player
-var player = new Player(2,5);
+var player = new Player();
+player.reset();
 
 
 
