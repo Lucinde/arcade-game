@@ -1,5 +1,8 @@
 // Enemies our player must avoid
-var Enemy = function(dx, dy, ds) {
+// dx is a pixel position
+// row is a game row
+// ds is speed factor
+var Enemy = function(dx, row, ds) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
@@ -7,7 +10,7 @@ var Enemy = function(dx, dy, ds) {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = dx;
-    this.y = dy;
+    this.row = row;
     this.s = ds;
 };
 
@@ -17,7 +20,16 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    if (this.x >= (maxCol+1)*colWidth) {
+        this.x = -colWidth;
+        this.row = Math.floor(Math.random() * 3) +1;
+        this.s += 5;
+    }
+    else {
     this.x += dt * this.s;
+    }
+    this.y = this.row*rowHeight+rowBase;
+
 };
 
 // Draw the enemy on the screen, required method for game
@@ -56,16 +68,33 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(keyCode) {
     switch (keyCode) {
       case 'left':
-        this.col -= 1;
+        if (this.col === 0) {
+          this.col = maxCol;
+        }
+        else {
+          this.col -= 1;
+        }
         break;
       case 'right':
-        this.col += 1;
+        if (this.col === maxCol) {
+          this.col = 0;
+        }
+        else {
+          this.col += 1;
+        }
         break;
       case 'up':
-        this.row -= 1;
+        if (this.row === 0) {
+          this.row = maxRow;
+        }
+        else {
+          this.row -= 1;
+        }
         break;
       case 'down':
-        this.row += 1;
+        if (this.row != maxRow) {
+          this.row += 1;
+        }
         break;
       default:
     }
@@ -75,11 +104,14 @@ Player.prototype.handleInput = function(keyCode) {
 var rowHeight = 83;
 var rowBase = -20;
 var colWidth = 101;
+var maxRow = 5;
+var maxCol = 4;
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-var enemy1 = new Enemy(0,rowBase+1*rowHeight,10);
-var enemy2 = new Enemy(0,rowBase+2*rowHeight,20);
-var enemy3 = new Enemy(0,rowBase+3*rowHeight,30);
+var enemy1 = new Enemy(-colWidth,1,20);
+var enemy2 = new Enemy(-colWidth,2,30);
+var enemy3 = new Enemy(-colWidth,3,50);
 
 var allEnemies = [enemy1, enemy2, enemy3];
 // Place the player object in a variable called player
