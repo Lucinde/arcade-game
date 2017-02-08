@@ -54,6 +54,7 @@ var Player = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/char-boy.png';
+    this.reset();
 };
 
 // Update the player's position, required method for game
@@ -127,7 +128,6 @@ var enemy3 = new Enemy(-colWidth,3,50);
 var allEnemies = [enemy1, enemy2, enemy3];
 // Place the player object in a variable called player
 var player = new Player();
-player.reset();
 
 
 
