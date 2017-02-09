@@ -1,3 +1,20 @@
 body {
     text-align: center;
 }
+
+.score {
+  font-family: sans-serif;
+  float: right;
+  font-size: 150%;
+}
+
+#scorecount {
+  font-weight: bold;
+  float: right;
+  margin-left: 10px;
+}
+
+.wrapper {
+  width: 505px;
+  display: inline-block;
+}

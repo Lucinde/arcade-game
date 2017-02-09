@@ -23,7 +23,6 @@ Enemy.prototype.update = function(dt) {
     if (this.x >= (maxCol+1)*colWidth) {
         this.x = -colWidth;
         this.row = Math.floor(Math.random() * 3) +1;
-        this.s += 5;
     }
     else {
     this.x += dt * this.s;
@@ -31,12 +30,17 @@ Enemy.prototype.update = function(dt) {
     this.y = this.row*rowHeight+rowBase;
     //deciding if there's a collision
     if (player.row == this.row && player.x+hitMargin < this.x+colWidth && player.x+colWidth-hitMargin > this.x) {
-      // collision
-       window.alert("you're hit!");
+      // collision substract score
+       player.subScore();
+       // return to start position
        player.reset();
     }
-
 };
+
+// make enemy faster
+Enemy.prototype.speedUp = function() {
+    this.s += 10;
+}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -54,6 +58,8 @@ var Player = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/char-boy.png';
+    this.score = 0;
+    this.displayScore();
     this.reset();
 };
 
@@ -68,6 +74,9 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+//define the key actions
+// when reaching the left or right edge go to the other side
+// when reaching the top add one point to score, speed up enemies and return to start position
 Player.prototype.handleInput = function(keyCode) {
     switch (keyCode) {
       case 'left':
@@ -89,8 +98,9 @@ Player.prototype.handleInput = function(keyCode) {
       case 'up':
         if (this.row === 1) {
           this.row = maxRow;
-          // alert finish
-          window.alert("YOU WON!");
+          // count score at finish
+          this.addScore(allEnemies);
+          // reset to start position
           this.reset();
         }
         else {
@@ -106,10 +116,48 @@ Player.prototype.handleInput = function(keyCode) {
     }
 }
 
+// reset player to starting position
 Player.prototype.reset = function() {
   this.row = maxRow;
   this.col = maxCol/2;
 }
+
+Player.prototype.displayScore = (function() {
+    // display a score count
+    var doc = document;
+    this.divScore = doc.createElement('div');
+    // create a wrapper to center the div
+    var wrapper = doc.createElement('div');
+    wrapper.className = 'wrapper';
+    // create a div for the score text
+    var div = doc.createElement('div');
+    div.className = 'score';
+    var t = doc.createTextNode("Your score: ");
+    div.appendChild(t);
+    wrapper.appendChild(div);
+    // create a div for the score count
+    this.divScore.id = 'scorecount';
+    this.divScore.innerHTML = this.score;
+    div.appendChild(this.divScore);
+    doc.body.insertBefore(wrapper, doc.body.childNodes[0]);
+  })
+
+// add 1 point and fasten enemies
+  Player.prototype.addScore = function(enemies) {
+    this.score += 1;
+    this.divScore.innerHTML = this.score;
+    enemies.forEach(function(enemy) {
+        enemy.speedUp();
+    });
+  }
+
+// substract 1 point
+  Player.prototype.subScore = function() {
+    if (this.score > 0) {
+      this.score -= 1;
+      this.divScore.innerHTML = this.score;
+    }
+  }
 
 // define constants
 var rowHeight = 83;
@@ -128,8 +176,6 @@ var enemy3 = new Enemy(-colWidth,3,50);
 var allEnemies = [enemy1, enemy2, enemy3];
 // Place the player object in a variable called player
 var player = new Player();
-
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
