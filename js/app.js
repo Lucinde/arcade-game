@@ -1,3 +1,6 @@
+// Whole-script strict mode syntax
+'use strict';
+
 // Enemies our player must avoid
 // dx is a pixel position
 // row is a game row
@@ -51,7 +54,10 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 // Enemies our player must avoid
-var Player = function() {
+// pName = name of the player, will be displayed in the scorecounter
+// this.col and this.row position of the player to be updated for the reset method and keys
+// this.x and this.y are the pixel positions of the player
+var Player = function(pName) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
@@ -59,6 +65,9 @@ var Player = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/char-boy.png';
     this.score = 0;
+    this.name = pName;
+    this.x;
+    this.y;
     this.displayScore();
     this.reset();
 };
@@ -132,7 +141,8 @@ Player.prototype.displayScore = (function() {
     // create a div for the score text
     var div = doc.createElement('div');
     div.className = 'score';
-    var t = doc.createTextNode("Your score: ");
+    div.id = 'playerName';
+    var t = doc.createTextNode(this.name + "'s score: ");
     div.appendChild(t);
     wrapper.appendChild(div);
     // create a div for the score count
@@ -141,6 +151,13 @@ Player.prototype.displayScore = (function() {
     div.appendChild(this.divScore);
     doc.body.insertBefore(wrapper, doc.body.childNodes[0]);
   })
+
+  Player.prototype.updateName = function(newName) {
+      this.name = newName;
+      var t = document.getElementById('playerName');
+      t.innerHTML = this.name + "'s score: ";
+      t.appendChild(this.divScore);
+  }
 
 // add 1 point and fasten enemies
   Player.prototype.addScore = function(enemies) {
@@ -175,7 +192,12 @@ var enemy3 = new Enemy(-colWidth,3,50);
 
 var allEnemies = [enemy1, enemy2, enemy3];
 // Place the player object in a variable called player
-var player = new Player();
+var player = new Player('Gijs');
+
+// change name
+function nameChanged(newName) {
+  player.updateName(newName);
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
